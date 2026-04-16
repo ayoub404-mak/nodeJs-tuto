@@ -1,5 +1,6 @@
- const  express = require('express');
+const  express = require('express');
 const { title } = require('node:process');
+const morgan = require('morgan');
 
  // express app
  const app = express();
@@ -10,6 +11,14 @@ const { title } = require('node:process');
 
 // listent for requests
 app.listen(3000);
+
+
+
+//middleware & static files
+app.use(express.static('public'));
+app.use(morgan('dev'));
+
+
 
 app.get('/', (req,res)=>{
 
@@ -23,6 +32,7 @@ app.get('/', (req,res)=>{
     //res.sendFile('./views/index.html',{root:__dirname });
     res.render('index',{title: 'Home', blogs:blogs});
 });
+
 
 app.get('/about', (req,res)=>{
     
