@@ -11,8 +11,8 @@ const { result } = require('lodash');
  const app = express();
 
 
- //connect mongodb . DONT FORGT TO CHANGE TO YOUR PASSWORD
-const  dbURI = 'mongodb+srv://dbNode:[YOURPASSWORD]@nodetuto.ng43pzs.mongodb.net/?appName=nodetuto'
+ //connect mongodb
+const  dbURI = 'mongodb+srv://dbNode:<U PASS>@nodetuto.ng43pzs.mongodb.net/?appName=nodetuto'
 mongoose.connect(dbURI)
 .then((result) => app.listen(3000))
 .catch((err) => console.log(err));
@@ -29,6 +29,7 @@ mongoose.connect(dbURI)
 
 //middleware & static files
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true}));
 app.use(morgan('dev'));
 
 
@@ -100,7 +101,46 @@ app.get('/blogs', (req, res) => {
     .catch((err) => {
         console.log(err);
     })
+});
+
+
+app.post('/blogs', (req, res) => {
+    const blog = new Blog(req.body);
+
+    blog.save()
+    .then((result) => {
+        res.redirect('/blogs');
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+});
+
+
+app.get('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+    Blog.findById(id)
+    .then(result => {
+        res.render('details', {blog: result, title: 'Blog Details'});
+    })
+    .catch(err => {
+        console.log(err);
+    });
 })
+
+
+app.delete('/blogs/:id', (req, res) => {
+    const id = req.params.id;
+
+    Blog.findByIdAndDelete(id)
+    .then(result => {
+        res.json({ redirect: '/blogs'})
+    }) 
+    .catch(err => {
+        console.log(err);
+    })
+})
+
 
 app.get('/blogs/create',(req,res) =>{
     res.render('create',{title:'Creat a new Blog'});
